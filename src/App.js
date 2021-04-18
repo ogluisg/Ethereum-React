@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Web3 from "web3";
+import { Button } from "react-bootstrap";
+import { useEffect, useState } from "react";
 
-function App() {
+const provider = Web3.givenProvider || "http://localhost:8545";
+const web3 = new Web3(provider);
+
+const App = () => {
+  const [account, setAccount] = useState("");
+
+  useEffect(() => {
+    loadBlockChainData();
+  }, []);
+
+  const loadBlockChainData = async () => {
+    const network = await web3.eth.net.getNetworkType();
+    console.log(`Network: ${network}`);
+  };
+
+  const requestAccount = async () => {
+    const accounts = await web3.eth.requestAccounts();
+    if (accounts.length > 0) {
+      setAccount(accounts[0]);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <h1>Ethereum Account Connector</h1>
+      {account !== "" && <p>Your account: {account}</p>}
+      <Button onClick={requestAccount} variant="primary">
+        Request account
+      </Button>
     </div>
   );
-}
+};
 
 export default App;
